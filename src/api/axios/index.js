@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const creatAxios = (baseURL) => axios.create({
-    baseURL,
+    //baseURL,
     headers: {
         'Content-Type': 'application/json'
     }
@@ -9,7 +9,7 @@ export const creatAxios = (baseURL) => axios.create({
 
 export const createAPI = (axios, {serviceMethod, method, uri}) => (data = {}) => {
     const apiMethod = method || serviceMethod;
-    return axios[apiMethod](`/${uri}`, data)
+    return axios[apiMethod](`/api/v1/${uri}`, data)
         .then(response => {
 
             if (response.status !== 200){
