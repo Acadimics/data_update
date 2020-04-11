@@ -3,7 +3,8 @@ const axios = require('axios');
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const path = require('path');
-const { port, serviceURL, APIs: routes, version, baseAPIRoute } = require('./server.config');
+const { serviceURL, APIs: routes, version, baseAPIRoute } = require('./src/server.config');
+const port = process.env.PORT || 3000;
 
 const baseRoute = `${baseAPIRoute}/v${version}`
 
