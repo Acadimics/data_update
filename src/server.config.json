@@ -51,6 +51,21 @@
             "name": "removeField",
             "serviceMethod": "post",
             "uri": "fields/removeField"
+        },
+        {
+            "name": "addConstraint",
+            "serviceMethod": "post",
+            "uri": "constraints/addConstraint"
+        },
+        {
+            "name": "removeConstraint",
+            "serviceMethod": "post",
+            "uri": "constraints/removeConstraint"
+        },
+        {
+            "name": "updateConstraint",
+            "serviceMethod": "post",
+            "uri": "constraints/updateConstraint"
         }
     ]
 }

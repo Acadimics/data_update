@@ -1,5 +1,4 @@
 import api from '../../api';
-import { uniqueId } from 'lodash';
 import { FETCH_CONSTRAINS, CREATE_CONSTRAIN, UPDATE_CONSTRAIN, REMOVE_CONSTRAIN } from './types';
 
 export const fetchConstraints = () => async dispatch => {
@@ -12,8 +11,7 @@ export const fetchConstraints = () => async dispatch => {
 };
 
 export const createConstrain = (data) => async dispatch => {
-    // await api.createConstrain(data);
-    const _id = await api.mock(uniqueId());
+    const {_id} = await api.addConstraint(data);
 
     dispatch({
         type: CREATE_CONSTRAIN,
@@ -22,8 +20,7 @@ export const createConstrain = (data) => async dispatch => {
 }
 
 export const updateConstrain = (data) => async dispatch => {
-    // await api.updateConstrain(data);
-    await api.mock(data);
+    await api.updateConstraint(data);
 
     dispatch({
         type: UPDATE_CONSTRAIN,
@@ -32,8 +29,7 @@ export const updateConstrain = (data) => async dispatch => {
 }
 
 export const removeConstrain = (data) => async dispatch => {
-    // await api.updateConstrain(data);
-    await api.mock(data);
+    await api.removeConstraint(data);
 
     dispatch({
         type: REMOVE_CONSTRAIN,
