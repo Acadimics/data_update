@@ -55,7 +55,7 @@ const Institution = ({ deletInstitution, updateInstitution, ...institution}) => 
             <div className="extra content">
                 <div className="ui two buttons">
                     <AddInstitutionModal setTrigger={setOpenModalTrigger}/>
-                    <div className="ui basic green button" onClick={() => openModal(institution)}>Update</div>
+                    <div className="ui basic green button" onClick={() => openModal({institution})}>Update</div>
                     <div className="ui basic red button active" onClick={()=> showDeleteConfirm(name, deleteInstitute)} >
                         Delete
                     </div>
