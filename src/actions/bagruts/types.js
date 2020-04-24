@@ -1,0 +1,1 @@
+export const GET_BAGRUTS = 'GET_BAGRUTS';

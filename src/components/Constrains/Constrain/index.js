@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
+import { keyBy, find } from 'lodash';
 import { connect } from 'react-redux';
 import { Card, Button, Modal } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -11,22 +12,23 @@ const { confirm } = Modal;
 
 function showDeleteConfirm(constrainDescription, deleteConstrain) {
     confirm({
-      title: 'Are you sure you want to delete this constrain?',
-      icon: <ExclamationCircleOutlined />,
-      content: `When clicked the OK button, ${constrainDescription} will be deleted`,
-      onOk() {
-        return deleteConstrain();
-      },
-      onCancel() {},
+        title: 'Are you sure you want to delete this constrain?',
+        icon: <ExclamationCircleOutlined />,
+        content: `When clicked the OK button, ${constrainDescription} will be deleted`,
+        onOk() {
+            return deleteConstrain();
+        },
+        onCancel() { },
     });
-  }
+}
 
-
-const Constrain = ({removeConstrain, ...constrain}) => {
+const Constrain = ({ removeConstrain, subject, ...constrain }) => {
     const { description, scoop } = constrain;
     const [updateConstrain, setUpdateConstrain] = useState(null);
 
-    const setModalTrigger = ({open}) => {
+    //const bagrutsBySubjectId = keyBy(bagruts.items, 'SubjectID');
+
+    const setModalTrigger = ({ open }) => {
         setUpdateConstrain(() => open);
     }
 
@@ -34,7 +36,9 @@ const Constrain = ({removeConstrain, ...constrain}) => {
         showDeleteConfirm(constrain.description, () => removeConstrain(constrain))
     }
 
-    const onDoubleClick = () => updateConstrain({readOnly: true});
+    const onDoubleClick = (event) => {
+        event.currentTarget.contains(event.target) && updateConstrain({ readOnly: true });
+    }
 
     const renderTitle = () => (
         <>
@@ -45,15 +49,25 @@ const Constrain = ({removeConstrain, ...constrain}) => {
             </div>
         </>
     )
-    
+
     return (
         <Card title={renderTitle()} size="small" className="constrain" onDoubleClick={onDoubleClick}>
-            <AddConstrainModal setTrigger={setModalTrigger} constrain={constrain}/>
-            {scoop}
+            <AddConstrainModal setTrigger={setModalTrigger} constrain={constrain} />
+            <span>{scoop}</span>
+            <span>{subject.SubjectName}</span>
         </Card>
     )
 }
 
-export default connect(null, {
+const mapStateToProps = ({ subjects }, { subjectId, scoop }) => {
+
+    const scoopSubjects = scoop === subjects.SCOOPS.BAGRUT ? subjects.bagruts : subjects.psychometry;
+
+    return {
+        subject: find(scoopSubjects, { SubjectID: subjectId }) || {}
+    }
+}
+
+export default connect(mapStateToProps, {
     removeConstrain: constrainsActions.removeConstrain
 })(Constrain);

@@ -7,4 +7,9 @@
             }
         }
     }
+
+    .ant-card-body {
+        display: flex;
+        flex-direction: column;
+    }
 }

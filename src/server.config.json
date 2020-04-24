@@ -66,6 +66,12 @@
             "name": "updateConstraint",
             "serviceMethod": "post",
             "uri": "constraints/updateConstraint"
+        },
+        {
+            "name": "getBagruts",
+            "method": "get",
+            "serviceMethod": "post",
+            "uri": "bagruts/getBagruts"
         }
     ]
 }

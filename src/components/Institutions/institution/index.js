@@ -10,22 +10,22 @@ import './style.scss'
 const { confirm } = Modal;
 
 function showDeleteConfirm(institutionName, deleteInstitute) {
-  confirm({
-    title: 'Are you sure you want to delete this institution?',
-    icon: <ExclamationCircleOutlined />,
-    content: `When clicked the OK button, ${institutionName} will be deleted`,
-    onOk() {
-      return deleteInstitute();
-    },
-    onCancel() {},
-  });
+    confirm({
+        title: 'Are you sure you want to delete this institution?',
+        icon: <ExclamationCircleOutlined />,
+        content: `When clicked the OK button, ${institutionName} will be deleted`,
+        onOk() {
+            return deleteInstitute();
+        },
+        onCancel() { },
+    });
 }
 
-const Institution = ({ deletInstitution, updateInstitution, ...institution}) => {
-    const { name, locations = [], type , _id, logo } = institution;
+const Institution = ({ deletInstitution, updateInstitution, ...institution }) => {
+    const { name, locations = [], type, _id, logo } = institution;
     const [openModal, setOpenModal] = useState(false);
 
-    const setOpenModalTrigger = ({open}) => {
+    const setOpenModalTrigger = ({ open }) => {
         !openModal && setOpenModal(() => open);
     }
 
@@ -33,8 +33,8 @@ const Institution = ({ deletInstitution, updateInstitution, ...institution}) => 
         await deletInstitution(_id);
     }
 
-    const onDoubleClick = () => {
-        openModal({institution, readOnly: true})
+    const onDoubleClick = (event) => {
+        event.currentTarget.contains(event.target) && openModal({ institution, readOnly: true })
     }
 
     return (
@@ -42,7 +42,7 @@ const Institution = ({ deletInstitution, updateInstitution, ...institution}) => 
             <div className="content description">
                 <img className="right floated mini ui image" src="/images/avatar/large/elliot.jpg" alt="" />
                 <div className="header">
-                    <img className="ui avatar image" src={logo || window.faker.image.avatar()}/>
+                    <img className="ui avatar image" src={logo || window.faker.image.avatar()} />
                     {name}
                 </div>
                 <div className="meta">
@@ -54,9 +54,9 @@ const Institution = ({ deletInstitution, updateInstitution, ...institution}) => 
             </div>
             <div className="extra content">
                 <div className="ui two buttons">
-                    <AddInstitutionModal setTrigger={setOpenModalTrigger}/>
-                    <div className="ui basic green button" onClick={() => openModal({institution})}>Update</div>
-                    <div className="ui basic red button active" onClick={()=> showDeleteConfirm(name, deleteInstitute)} >
+                    <AddInstitutionModal setTrigger={setOpenModalTrigger} />
+                    <div className="ui basic green button" onClick={() => openModal({ institution })}>Update</div>
+                    <div className="ui basic red button active" onClick={() => showDeleteConfirm(name, deleteInstitute)} >
                         Delete
                     </div>
                 </div>
