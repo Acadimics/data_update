@@ -18,13 +18,8 @@ const service = axios.create({
 })
 
 app.get(`${baseRoute}/ping`, function (req, res) {
- return res.send('pong');
+    return res.send('pong');
 });
-
-app.get('/index', function(req, res) {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
-
 
 var jsonParser = bodyParser.json()
 
@@ -40,18 +35,18 @@ routes.forEach(({ method, serviceMethod, uri }) => {
         (req, res) => {
             console.time(requestLOG);
             console.info(`${requestLOG}...`);
-            let reqConfig = {};        
-            if(routeMethod.toLowerCase() !== 'get'){
-               reqConfig = req.body; 
-            }  
+            let reqConfig = {};
+            if (routeMethod.toLowerCase() !== 'get') {
+                reqConfig = req.body;
+            }
             return service[serviceMethod](`/${uri}`, reqConfig)
                 .then(response => {
-                    if (response.status >= 400){
+                    if (response.status >= 400) {
                         throw ''
                     }
                     console.info(`${requestLOG}... - DONE`);
                     console.timeEnd(requestLOG);
-                    return res.send(response.data || []); 
+                    return res.send(response.data || []);
                 })
                 .catch(err => {
                     console.error(err, `Failed request "${serviceMethod}" - "${serviceRoute}"`);
@@ -60,6 +55,10 @@ routes.forEach(({ method, serviceMethod, uri }) => {
                 })
         }
     )
+});
+
+app.get('*', function (req, res) {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 app.listen(port);
