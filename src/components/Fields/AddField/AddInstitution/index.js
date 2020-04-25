@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { groupBy, find, reject, get } from 'lodash';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { Modal, Button, Select, InputNumber, Form, notification  } from 'antd';
+import { Modal, Button, Select, InputNumber, Form, notification } from 'antd';
 
 import './style.scss';
 
 const Option = Select.Option;
 
-const AddInstitution = ({ institutions, constrains, onChange, setTrigger }) => {
+const AddInstitution = ({ institutions, constrains, onChange, setTrigger, subjects }) => {
     const [visible, setVisible] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [selectedInstitutions, setSelectedInstitutions] = useState(institutions);
@@ -19,15 +19,15 @@ const AddInstitution = ({ institutions, constrains, onChange, setTrigger }) => {
     const getAvailable = () => reject(institutions, ({ _id }) => selectedInstitutions.includes(_id))
 
     useEffect(() => {
-        setTrigger({open});
+        setTrigger({ open });
     }, []);
 
     const open = ({ institution = {}, selected }) => {
         const editing = !!institution.institutionId;
 
         setSelectedInstitutions(reject(selected, (id) => id === institution.institutionId));
-        
-        if(editing){
+
+        if (editing) {
             form.setFieldsValue(institution)
         }
 
@@ -54,7 +54,7 @@ const AddInstitution = ({ institutions, constrains, onChange, setTrigger }) => {
         </Form.Item>
     );
 
-    const renderRequierments = ({scoop, constrains}) => {
+    const renderRequierments = ({ scoop, constrains }) => {
         const fieldName = ['requirements', scoop];
         let selectedConstrain = get(constrains, '[0]._id');
 
@@ -62,7 +62,7 @@ const AddInstitution = ({ institutions, constrains, onChange, setTrigger }) => {
             const requirements = form.getFieldValue(fieldName);
             const requierment = find(requirements, { _id: selectedConstrain });
 
-            if(requierment){
+            if (requierment) {
                 notification.error({
                     message: `requierment ${requierment.description} is already selected`,
                     description: 'you cant select same requierment more than once'
@@ -74,16 +74,16 @@ const AddInstitution = ({ institutions, constrains, onChange, setTrigger }) => {
             add(find(constrains, { _id: selectedConstrain }));
         }
 
-        const renderRequiermentField = ({name, key}, remove) => {
+        const renderRequiermentField = ({ name, key }, remove) => {
 
-            const fieldProps = form.getFieldValue([...fieldName,name]);
+            const fieldProps = form.getFieldValue([...fieldName, name]);
             fieldProps.value = fieldProps.value || 0;
-            
-            return (            
+
+            return (
                 <Form.Item key={key} label={fieldProps.description}>
-                    <InputNumber type="number" onChange={(value)=> fieldProps.value = value} 
-                        defaultValue={fieldProps.value } required/>
-                    <Button type="link" onClick={() => remove(name)}><MinusCircleOutlined/> remove</Button>
+                    <InputNumber type="number" onChange={(value) => fieldProps.value = value}
+                        defaultValue={fieldProps.value} required />
+                    <Button type="link" onClick={() => remove(name)}><MinusCircleOutlined /> remove</Button>
                 </Form.Item>
             )
         }
@@ -94,7 +94,7 @@ const AddInstitution = ({ institutions, constrains, onChange, setTrigger }) => {
                     <div className='requirements'>
                         <Form.Item label={scoop} className="selector">
                             <Select onChange={(value) => selectedConstrain = value} defaultValue={selectedConstrain}>
-                                {constrains.map(({description, _id: id}) => (
+                                {constrains.map(({ description, _id: id }) => (
                                     <Option key={id} value={id}>{description}</Option>
                                 ))}
                             </Select>
@@ -112,13 +112,14 @@ const AddInstitution = ({ institutions, constrains, onChange, setTrigger }) => {
         setIsEditing(false);
         isEditing && form.resetFields();
     }
-    
+
+    const SCOOPS = subjects.SCOOPS;
     return (
         <Modal title="Institution" visible={visible} onCancel={onCancel} footer={null}>
             <Form form={form} name="constrains" onFinish={onFinish} className="field-add-institution" >
                 {renderInstitution()}
-                {renderRequierments({scoop: 'bagrut', constrains: constrainsByScoop['bagrut']})}
-                {renderRequierments({scoop: 'psychometry', constrains: constrainsByScoop['psychometry']})}
+                {renderRequierments({ scoop: SCOOPS.BAGRUT, constrains: constrainsByScoop[SCOOPS.BAGRUT] })}
+                {renderRequierments({ scoop: SCOOPS.PSYCHOMETRY, constrains: constrainsByScoop[SCOOPS.PSYCHOMETRY] })}
                 <Form.Item>
                     <Button type="primary" htmlType="submit" className="submit-btn">
                         {isEditing ? 'Update' : 'Add'}
@@ -129,9 +130,10 @@ const AddInstitution = ({ institutions, constrains, onChange, setTrigger }) => {
     )
 }
 
-const mapStateToProps = ({ institutions, constrains}) => ({
+const mapStateToProps = ({ institutions, constrains, subjects }) => ({
     institutions,
-    constrains
+    constrains,
+    subjects
 })
 
 export default connect(mapStateToProps)(AddInstitution);
