@@ -13,6 +13,27 @@
     }
 
     .requirements {
+        
+        .requierment-field {
+            display: inline-flex;
+            justify-content: space-between;
+            width: 100%;
+
+            > div {
+                flex: 1;
+                display: grid;
+                grid-template-columns: 197px auto auto 55px;
+                margin-bottom: 24px;
+                align-items: center;
+                direction: rtl;
+
+                > span {
+                    text-align: right
+                }
+            }
+
+        }
+
         .selector {
             .ant-form-item-control {
                 flex: 1;

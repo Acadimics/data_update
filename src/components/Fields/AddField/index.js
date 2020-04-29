@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { groupBy, keyBy, map, reject } from 'lodash';
 import { connect } from 'react-redux';
-import { Modal, Button, Select, Layout, Form, Input, Collapse, List } from 'antd';
+import { Modal, Button, Layout, Form, Input, Collapse, List } from 'antd';
 import { fieldsActions } from '../../../actions/index'
 import AddInstitution from './AddInstitution';
 
 import './style.scss'
 
-const { Header, Footer, Sider, Content } = Layout;
+const { Header, Footer, Content } = Layout;
 const { Panel } = Collapse;
 
-const buildSubmitConstrains = ({ bagrut = [], psychometry = [] }) =>
-    [...bagrut, ...psychometry].map(({ _id, value }) => ({
-        constraintId: _id,
-        value
-    }))
+const buildSubmitConstrains = (requirements, SCOOPS) =>
+    [
+        ...requirements[SCOOPS.BAGRUT] || [],
+        ...requirements[SCOOPS.PSYCHOMETRY] || []
+    ]
+        .map(({ _id, value, units }) => ({
+            constraintId: _id,
+            value,
+            units
+        }))
 
 const deserialize = (field, constrainsData) => {
     const { name, _id, institutions } = field;
@@ -22,10 +27,13 @@ const deserialize = (field, constrainsData) => {
     const constrainsById = keyBy(constrainsData.items, '_id');
 
     const getConstraintsByScoop = (constrains) => groupBy(
-        constrains.map(({ constraintId, value }) => ({
-            ...constrainsById[constraintId],
-            value
-        })), 'scoop');
+        constrains
+            .filter(({ constraintId }) => constrainsById[constraintId])
+            .map(({ constraintId, value, units }) => ({
+                ...constrainsById[constraintId],
+                value,
+                units
+            })), 'scoop');
 
     return {
         _id,
@@ -37,8 +45,8 @@ const deserialize = (field, constrainsData) => {
     }
 }
 
-const AddField = ({ institutions = [], constrains, field, createField, 
-        onSubmit, updateField, readOnly = false }) => {
+const AddField = ({ institutions = [], constrains, field, createField,
+    onSubmit, updateField, readOnly = false, subjects }) => {
     const [selectedInstitutions, setAa] = useState([]);
     const [open, setOpen] = useState(false);
     const [editing, setIsEditing] = useState(false);
@@ -61,7 +69,7 @@ const AddField = ({ institutions = [], constrains, field, createField,
             institutions: selectedInstitutions.map(({ institutionId, requirements }) => ({
                 institutionId,
                 requirements: {
-                    constraints: buildSubmitConstrains(requirements)
+                    constraints: buildSubmitConstrains(requirements, subjects.SCOOPS)
                 }
             }))
         };
@@ -87,7 +95,7 @@ const AddField = ({ institutions = [], constrains, field, createField,
                 selected = reject(selectedInstitutions, { institutionId: data.institutionId })
             }
 
-            setAa([...selected, data]);
+            setAa([...selected, { ...data }]);
         }
     }
 
@@ -126,9 +134,13 @@ const AddField = ({ institutions = [], constrains, field, createField,
             <Panel header={institutionsById[institutionId].name} key={institutionId} extra={renderExtra(institution)}>
                 {map(requirements, (values, header) => values && values.length ? (
                     <List header={<b>{header}</b>} key={header} dataSource={values} size="small"
-                        renderItem={({ description, value }) => (
+                        renderItem={({ description, value, units }) => (
                             <List.Item>
-                                {description}:{value}
+                                <div className="requerment-item">
+                                    <span> {description}: </span>
+                                    {header === subjects.SCOOPS.BAGRUT && <span> יחידות:{units} </span>}
+                                    <span> ציון:{value} </span>
+                                </div>
                             </List.Item>
                         )} />
                 ) : null)}
@@ -166,9 +178,10 @@ const AddField = ({ institutions = [], constrains, field, createField,
     )
 }
 
-const mapStateToProps = ({ institutions, constrains }) => ({
+const mapStateToProps = ({ institutions, constrains, subjects }) => ({
     institutions,
-    constrains
+    constrains,
+    subjects
 });
 
 const ConnectedAddField = connect(mapStateToProps, {

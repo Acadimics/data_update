@@ -80,11 +80,29 @@ const AddInstitution = ({ institutions, constrains, onChange, setTrigger, subjec
             fieldProps.value = fieldProps.value || 0;
 
             return (
-                <Form.Item key={key} label={fieldProps.description}>
-                    <InputNumber type="number" onChange={(value) => fieldProps.value = value}
-                        defaultValue={fieldProps.value} required />
+                <span className="requierment-field">
+                    <div>
+                        <span>{fieldProps.description}:</span>
+                        <span>
+                            ציון:
+                        <InputNumber type="number" onChange={(value) => fieldProps.value = value}
+                                min={fieldProps.scoop === subjects.SCOOPS.BAGRUT ? 56 : 0}
+                                max={fieldProps.scoop === subjects.SCOOPS.BAGRUT ? 100 : 150}
+                                placeholder="ציון"
+                                defaultValue={fieldProps.value} required />
+                        </span>
+                        {fieldProps.scoop === subjects.SCOOPS.BAGRUT &&
+                            <span>
+                                יחידות:
+                                <InputNumber type="number" onChange={(value) => fieldProps.units = value}
+                                    min={0} max={5}
+                                    placeholder="יחידות"
+                                    defaultValue={fieldProps.units} required />
+                            </span>
+                        }
+                    </div>
                     <Button type="link" onClick={() => remove(name)}><MinusCircleOutlined /> remove</Button>
-                </Form.Item>
+                </span>
             )
         }
 
@@ -115,7 +133,7 @@ const AddInstitution = ({ institutions, constrains, onChange, setTrigger, subjec
 
     const SCOOPS = subjects.SCOOPS;
     return (
-        <Modal title="Institution" visible={visible} onCancel={onCancel} footer={null}>
+        <Modal title="Institution" visible={visible} onCancel={onCancel} footer={null} width="720px">
             <Form form={form} name="constrains" onFinish={onFinish} className="field-add-institution" >
                 {renderInstitution()}
                 {renderRequierments({ scoop: SCOOPS.BAGRUT, constrains: constrainsByScoop[SCOOPS.BAGRUT] })}
